@@ -23,6 +23,13 @@ def is_recursive(ast_tree):
 # import한 라이브러리를 알 수 있음
 # 수정 => body 안에서 타고 내려갈 수 있도록
 def get_libraries(ast_tree):
+    """ Returns
+    Args:
+        tree (ast.Module): ast tree
+
+    Returns:
+        list
+    """
     dump_ast_tree = ast.dump(ast_tree, indent=0).split()
     # code = code.split()
     libraries = []
@@ -41,7 +48,14 @@ def get_libraries(ast_tree):
 # queue 1. Collection 모듈의 deque, 2. queue 모듈의 Queue
 # flattening한 ast_tree필요 -> ast.dump(ast_tree)
 # return : dictionary로 변환 -> json형태를 위해
-def get_data_structure(ast_tree):
+def get_data_structure_list(ast_tree):
+    """ Returns
+    Args:
+        tree (ast.Module): ast tree
+
+    Returns:
+        list
+    """
     return_list = []
 
     t = ast.dump(ast_tree)
@@ -72,7 +86,14 @@ def get_data_structure(ast_tree):
 
     return return_list
 
-def get_data_structure_dict(ast_tree):
+def get_data_structure(ast_tree):
+    """ Returns
+    Args:
+        tree (ast.Module): ast tree
+
+    Returns:
+        dict
+    """
     ret = {}
 
     t = ast.dump(ast_tree)
@@ -106,12 +127,26 @@ def get_data_structure_dict(ast_tree):
 # binary search를 사용하고 있는지 검사
 # ast.dump(ast_tree)
 def is_bisect(ast_tree):
+    """ Returns
+    Args:
+        tree (ast.Module): ast tree
+
+    Returns:
+        bool: return whether binary searching is used or not
+    """
     dump_ast_tree = ast.dump(ast_tree)
     if 'Call(func=Name(id=\'bisect_left\'' in dump_ast_tree or 'Call(func=Name(id=\'bisect_right\'' in dump_ast_tree:
         return True
     return False
 
 def get_func(ast_tree):
+    """ Returns
+    Args:
+        tree (ast.Module): ast tree
+
+    Returns:
+        list
+    """
     # print(ast.dump(ast_tree))
     def_pattern = re.compile(r'FunctionDef\(name=\'[A-Za-z0-9\_]+\'')
     find_defs = def_pattern.findall(ast.dump(ast_tree))
@@ -137,10 +172,16 @@ def get_func(ast_tree):
         if cname not in defs:
             calls.append(cname)
 
-    print(calls)
     return calls
 
 def return_json(code):
+    """ Returns
+    Args:
+        string: python code
+
+    Returns:
+        dict
+    """
     ret = {}
 
     ast_tree = ast.parse(code)
@@ -149,7 +190,7 @@ def return_json(code):
     ret['recursion'] = is_recursive(ast_tree)
     ret['data_structure'] = get_data_structure(ast_tree)
     ret['binary search'] = is_bisect(ast_tree)
-    ret['function'] = get_data_structure_dict(ast_tree)
+    ret['function'] = get_data_structure(ast_tree)
 
     print(ret)
     
@@ -172,8 +213,6 @@ def main(code):
 
     print('<functions>')
     get_func(ast_tree)
-
-    print(get_data_structure_dict(ast_tree))
 
 # binary search
 # 중첩 for문
