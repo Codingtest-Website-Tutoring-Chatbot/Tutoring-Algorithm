@@ -165,6 +165,8 @@ def get_func(ast_tree):
         cname = f.split('\'')[1]
         if cname not in defs:
             calls.append(cname)
+    
+    
 
     find_calls = call_pattern2.findall(ast.dump(ast_tree))
     for f in find_calls:
@@ -190,14 +192,14 @@ def return_json(code):
     ret['recursion'] = is_recursive(ast_tree)
     ret['data_structure'] = get_data_structure(ast_tree)
     ret['binary search'] = is_bisect(ast_tree)
-    ret['function'] = get_data_structure(ast_tree)
+    ret['function'] = get_func(ast_tree)
 
     print(ret)
     
 
 def main(code):
     ast_tree = ast.parse(code)
-    # print(ast.dump(ast_tree, indent=4))
+    print(ast.dump(ast_tree, indent=4))
 
     print("<library>")
     print(get_libraries(ast_tree))
@@ -212,12 +214,12 @@ def main(code):
     print(is_bisect(ast_tree))
 
     print('<functions>')
-    get_func(ast_tree)
+    print(get_func(ast_tree))
 
 # binary search
 # 중첩 for문
 if __name__ == "__main__":
-    f = open("test/test_function.py", 'r')
+    f = open("test/test.py", 'r')
     try:
         return_json(f.read())
         # main(f.read())
