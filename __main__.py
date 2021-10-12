@@ -72,6 +72,37 @@ def get_data_structure(ast_tree):
 
     return return_list
 
+def get_data_structure_dict(ast_tree):
+    ret = {}
+
+    t = ast.dump(ast_tree)
+
+    # count set
+    if 'Call(func=Name(id=\'set\'' in t:
+        ret['set'] = t.count('Call(func=Name(id=\'set\'')
+    
+    # count deque
+    if 'value=Call(func=Name(id=\'deque\'' in t:
+        ret['set'] = t.count('Call(func=Name(id=\'deque\'')
+    
+    # count list
+    value = 0
+    value += t.count('Call(func=Name(id=\'list\'')
+    value += t.count('value=List')
+
+    if value:
+        ret['list'] = value
+    
+    value = 0
+    value += t.count('value=Dict')
+    value += t.count('Call(func=Name(id=\'dict\'')
+
+    if value:
+        ret['dictionary'] = value
+
+
+    return ret
+
 # binary search를 사용하고 있는지 검사
 # ast.dump(ast_tree)
 def is_bisect(ast_tree):
@@ -85,7 +116,7 @@ def get_func(ast_tree):
     def_pattern = re.compile(r'FunctionDef\(name=\'[A-Za-z0-9\_]+\'')
     find_defs = def_pattern.findall(ast.dump(ast_tree))
     defs = []
-    g
+    
     for f in find_defs:
         defs.append(f.split('\'')[1])
 
@@ -108,6 +139,19 @@ def get_func(ast_tree):
 
     print(calls)
     return calls
+
+def return_json(code):
+    ret = {}
+
+    ast_tree = ast.parse(code)
+
+    ret['library'] = get_libraries(ast_tree)
+    ret['recursion'] = is_recursive(ast_tree)
+    ret['data_structure'] = get_data_structure(ast_tree)
+    ret['binary search'] = is_bisect(ast_tree)
+    ret['function'] = get_data_structure_dict(ast_tree)
+
+    print(ret)
     
 
 def main(code):
@@ -129,11 +173,14 @@ def main(code):
     print('<functions>')
     get_func(ast_tree)
 
+    print(get_data_structure_dict(ast_tree))
+
 # binary search
 # 중첩 for문
 if __name__ == "__main__":
     f = open("test/test_function.py", 'r')
     try:
-        main(f.read())
+        return_json(f.read())
+        # main(f.read())
     finally:
         f.close()
