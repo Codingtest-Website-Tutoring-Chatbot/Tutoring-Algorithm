@@ -1,6 +1,6 @@
 import ast
 import re
-
+import json
 
 # 나중에 dfs로 변경
 def is_recursive(ast_tree):
@@ -195,6 +195,7 @@ def return_json(code):
     ret['function'] = get_func(ast_tree)
 
     print(ret)
+    return json.dumps(ret)
     
 
 def main(code):
