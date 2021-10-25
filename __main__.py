@@ -19,9 +19,7 @@ def is_recursive(ast_tree):
                     return True
     return False
 
-# binary search를 사용하는지 확인
-# import한 라이브러리를 알 수 있음
-# 수정 => body 안에서 타고 내려갈 수 있도록
+
 def get_libraries(ast_tree):
     """ Returns
     Args:
@@ -30,18 +28,23 @@ def get_libraries(ast_tree):
     Returns:
         list
     """
-    dump_ast_tree = ast.dump(ast_tree, indent=0).split()
-    # code = code.split()
+    dump_ast_tree = ast.dump(ast_tree)
+    print(ast.dump(ast_tree))
     libraries = []
-    import_pattern = re.compile('name=[a-z\']+')
-    import_from_pattern = re.compile('module=[a-z\']+')
+    import_pattern = re.compile(r'Import\(names=\[alias\(name=\'[a-z]+\'')
+    import_from_pattern = re.compile(r'ImportFrom\(module=\'[a-z]+\', names=\[alias\(name=\'[a-z]+\'')
+    module_pattern = re.compile(r'module=[a-z\']+')
+    name_pattern = re.compile(r'name=[a-z\']+')
+    
+    for i in import_pattern.findall(dump_ast_tree):
+        libraries.append(i[i.index('\'') + 1: -1])
 
-    for i in range(len(dump_ast_tree)):
-        if dump_ast_tree[i][:-1] == 'Import':
-            libraries.append(import_pattern.search(dump_ast_tree[i+2]).group()[6:-1])
-        elif dump_ast_tree[i][:-1] == 'ImportFrom':
-            libraries.append(import_pattern.search(dump_ast_tree[i+3]).group()[6:-1] + ' from ' + import_from_pattern.search(dump_ast_tree[i+1]).group()[8:-1])
-
+    for i in import_from_pattern.findall(dump_ast_tree):
+        f = module_pattern.search(i).group()
+        im = name_pattern.search(i).group()
+        libraries.append('from ' + f[f.index('\'') + 1: -1] + ' import ' + im[im.index('\'') + 1: -1])
+        
+    
     return libraries
 
 # list, dictionary, set, deque
