@@ -184,7 +184,14 @@ def return_json(code):
     Returns:
         dict
     """
+
+    lines = code.split("\\r\\n")
+    code = ""
+    for line in lines:
+        code += (line + "\r\n")
+    
     ret = {}
+
 
     ast_tree = ast.parse(code)
 
